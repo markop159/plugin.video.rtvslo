@@ -2,7 +2,7 @@
 
 ## What it is ##
 
-Audio / video plugin (add-on) for Kodi. It plays audio and video podcasts from archive from RTV Slovenia national television.
+Audio / video plugin (add-on) for Kodi. It plays audio and video podcasts from archive of RTV Slovenia national television.
 
 ## Why ##
 
