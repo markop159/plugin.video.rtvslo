@@ -14,4 +14,4 @@ To learn new things
 
 ## Credits ##
 
-[@ro-le](github.com/ro-le) for his work on this plugin
+[@ro-le](https://github.com/ro-le) for his work on this plugin
