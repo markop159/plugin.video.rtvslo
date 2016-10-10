@@ -105,7 +105,7 @@ if __name__ == "__main__":
 	try:
 		#get add-on base url
 		base = str(sys.argv[0])
-	
+
 		#get add-on handle
 		handle = int(sys.argv[1])
 
@@ -157,7 +157,7 @@ if __name__ == "__main__":
 		#step 2: ...?...
 		elif mode == 1:
 			#mode == 1: list radio stations (LIVE RADIO)
-			radioList = [['ra1', 'RA1', 'Radio prvi'], ['val202', 'VAL202', 'Val 202'], ['ars', 'ARS', 'ARS'], ['rakp', 'RAKP', 'Radio Koper'], ['rsi', 'RSI', 'Radio Si'], ['rmb', 'RAMB', 'Radio Maribor'], ['capo', 'CAPO', 'Radio Capodistria'], ['mmr', 'MMR', 'RA MMR']]
+			radioList = [['ra1', 'RA1', 'Radio prvi'], ['val202', 'VAL202', 'Val 202'], ['sportval202', 'SPORTVAL202', 'Val 202 Šport'], ['ars', 'ARS', 'ARS'], ['rakp', 'RAKP', 'Radio Koper'], ['rsi', 'RSI', 'Radio Si'], ['rmb', 'RAMB', 'Radio Maribor'], ['capo', 'CAPO', 'Radio Capodistria'], ['mmr', 'MMR', 'RA MMR']]
 			liveLink = 'http://mp3.rtvslo.si/'
 			liveThumb = 'http://img.rtvslo.si/_up/ava/archive2/Content/channel_logos/'
 			for radio in radioList:
