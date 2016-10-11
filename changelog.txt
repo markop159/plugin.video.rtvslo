@@ -1,12 +1,15 @@
+v2.1.0
+ - added genres and sorting similar to android version of RTV4D app
+ - added 'val 202 sport' radio station
 v2.0.4
  - added support for "ava_archive03" media
 v2.0.3
- - added new functionallity: live radio streaming
+ - added new functionality: live radio streaming
 v2.0.2
- - added new functionallity: new shows
- - added new functionallity: new clips
+ - added new functionality: new shows
+ - added new functionality: new clips
 v2.0.1
- - added new functionallity: "next page" markers
+ - added new functionality: "next page" markers
  - support for older "ava_archive01" media
 v2.0.0
  - Works with the new rtvslo website, since Jan 2016
