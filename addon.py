@@ -283,7 +283,7 @@ if __name__ == "__main__":
 			url_part2 = '&q=&showTypeId='
 			url_part3 = '&sort='
 			url_part4 = '&order=desc&pageSize=12&pageNumber='
-			url_part5 = '&source=&hearingAid=0&clip=show&from=2007-01-01&to=&WPId=&zkp=0&callback=jQuery11130980077945755083_1462458118383&_=1462458118384'
+			url_part5 = '&source=&hearingAid=0&clip=clip&from=2007-01-01&to=&WPId=&zkp=0&callback=jQuery111307342043845078507_1462458568679&_=1462458568680'
 			client_id = '82013fb3a531d5414f478747c1aca622'
 			page_no = page
 			showType = showTypeId
