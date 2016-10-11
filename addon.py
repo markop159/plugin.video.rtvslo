@@ -132,6 +132,10 @@ if __name__ == "__main__":
 		id_ = idArg[0]
 		pageArg = args.get('page', ['0'])
 		page = int(pageArg[0])
+		showTypeIdArg = args.get('showTypeId', ['0'])
+		showTypeId = int(showTypeIdArg[0])
+		sortArg = args.get('sort', [''])
+		sort = sortArg[0]
 
 		#step 1: Collect underpants...
 		if mode == 0:
@@ -163,22 +167,27 @@ if __name__ == "__main__":
 		elif mode == 21:
 			#mode == 21: (ARHIV ODDAJ)
 
-			li = xbmcgui.ListItem('Zvrsti')
-			url = build_url(base, {'content_type': contentType, 'mode': 211})
-			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
-			li = xbmcgui.ListItem('Sortiranje')
-			url = build_url(base, {'content_type': contentType, 'mode': 212})
-			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
-
 			#url parameters
 			url_part1 = 'http://api.rtvslo.si/ava/getSearch?client_id='
-			url_part2 = '&q=&showTypeId=&sort=date&order=desc&pageSize=12&pageNumber='
-			url_part3 = '&source=&hearingAid=0&clip=show&from=2007-01-01&to=&WPId=&zkp=0&callback=jQuery11130980077945755083_1462458118383&_=1462458118384'
+			url_part2 = '&q=&showTypeId='
+			url_part3 = '&sort='
+			url_part4 = '&order=desc&pageSize=12&pageNumber='
+			url_part5 = '&source=&hearingAid=0&clip=show&from=2007-01-01&to=&WPId=&zkp=0&callback=jQuery11130980077945755083_1462458118383&_=1462458118384'
 			client_id = '82013fb3a531d5414f478747c1aca622'
 			page_no = page
+			showType = showTypeId
+			sort_by = sort
+
+			#maps for genres and sorting
+			li = xbmcgui.ListItem('Zvrsti')
+			url = build_url(base, {'content_type': contentType, 'mode': 211, 'sort': sort})
+			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
+			li = xbmcgui.ListItem('Sortiranje')
+			url = build_url(base, {'content_type': contentType, 'mode': 212, 'showTypeId': showTypeId})
+			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 
 			#download response from rtvslo api
-			js = downloadSourceToString(url_part1+client_id+url_part2+str(page_no)+url_part3)
+			js = downloadSourceToString(url_part1+client_id+url_part2+str(showType)+url_part3+str(sort_by)+url_part4+str(page_no)+url_part5)
 
 			#extract json from response
 			x = js.find('({')
@@ -226,65 +235,70 @@ if __name__ == "__main__":
 				if len(streamList) > 0:
 					page_no = page_no + 1
 					li = xbmcgui.ListItem('> '+str(page_no)+' >')
-					url = build_url(base, {'content_type': contentType, 'mode': mode, 'page': page_no})
+					url = build_url(base, {'content_type': contentType, 'mode': mode, 'page': page_no, 'sort': sort, 'showTypeId': showTypeId})
 					xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 
 		elif mode == 211:
 			li = xbmcgui.ListItem('Informativni')
-			url = build_url(base, {'content_type': contentType, 'mode': 21, 'showTypeId': 34})
+			url = build_url(base, {'content_type': contentType, 'mode': 21, 'showTypeId': 34, 'sort': sort})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Športni')
-			url = build_url(base, {'content_type': contentType, 'mode': 21, 'showTypeId': 35})
+			url = build_url(base, {'content_type': contentType, 'mode': 21, 'showTypeId': 35, 'sort': sort})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Izobraževalni')
-			url = build_url(base, {'content_type': contentType, 'mode': 21, 'showTypeId': 33})
+			url = build_url(base, {'content_type': contentType, 'mode': 21, 'showTypeId': 33, 'sort': sort})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Kulturno Umetniški')
-			url = build_url(base, {'content_type': contentType, 'mode': 21, 'showTypeId': 30})
+			url = build_url(base, {'content_type': contentType, 'mode': 21, 'showTypeId': 30, 'sort': sort})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Razvedrilni')
-			url = build_url(base, {'content_type': contentType, 'mode': 21, 'showTypeId': 36})
+			url = build_url(base, {'content_type': contentType, 'mode': 21, 'showTypeId': 36, 'sort': sort})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Verski')
-			url = build_url(base, {'content_type': contentType, 'mode': 21, 'showTypeId': 32})
+			url = build_url(base, {'content_type': contentType, 'mode': 21, 'showTypeId': 32, 'sort': sort})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Otroški')
-			url = build_url(base, {'content_type': contentType, 'mode': 21, 'showTypeId': 31})
+			url = build_url(base, {'content_type': contentType, 'mode': 21, 'showTypeId': 31, 'sort': sort})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Mladinski')
-			url = build_url(base, {'content_type': contentType, 'mode': 21, 'showTypeId': 15890838})
+			url = build_url(base, {'content_type': contentType, 'mode': 21, 'showTypeId': 15890838, 'sort': sort})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 
 		elif mode == 212:
 			li = xbmcgui.ListItem('Po Datumu')
-			url = build_url(base, {'content_type': contentType, 'mode': 21, 'sort': 'date'})
+			url = build_url(base, {'content_type': contentType, 'mode': 21, 'sort': 'date', 'showTypeId': showTypeId})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Po Naslovu')
-			url = build_url(base, {'content_type': contentType, 'mode': 21, 'sort': 'title'})
+			url = build_url(base, {'content_type': contentType, 'mode': 21, 'sort': 'title', 'showTypeId': showTypeId})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Po Popularnosti')
-			url = build_url(base, {'content_type': contentType, 'mode': 21, 'sort': 'popularity'})
+			url = build_url(base, {'content_type': contentType, 'mode': 21, 'sort': 'popularity', 'showTypeId': showTypeId})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 
 		elif mode == 31:
 			#mode == 31: (ARHIV PRISPEVKOV)
 
-			li = xbmcgui.ListItem('Zvrsti')
-			url = build_url(base, {'content_type': contentType, 'mode': 311})
-			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
-			li = xbmcgui.ListItem('Sortiranje')
-			url = build_url(base, {'content_type': contentType, 'mode': 312})
-			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
-
 			#url parameters
 			url_part1 = 'http://api.rtvslo.si/ava/getSearch?client_id='
-			url_part2 = '&q=&showTypeId=&sort=date&order=desc&pageSize=12&pageNumber='
-			url_part3 = '&source=&hearingAid=0&clip=clip&from=2007-01-01&to=&WPId=&zkp=0&callback=jQuery111307342043845078507_1462458568679&_=1462458568680'
+			url_part2 = '&q=&showTypeId='
+			url_part3 = '&sort='
+			url_part4 = '&order=desc&pageSize=12&pageNumber='
+			url_part5 = '&source=&hearingAid=0&clip=show&from=2007-01-01&to=&WPId=&zkp=0&callback=jQuery11130980077945755083_1462458118383&_=1462458118384'
 			client_id = '82013fb3a531d5414f478747c1aca622'
 			page_no = page
+			showType = showTypeId
+			sort_by = sort
+
+			#maps for genres and sorting
+			li = xbmcgui.ListItem('Zvrsti')
+			url = build_url(base, {'content_type': contentType, 'mode': 311, 'sort': sort})
+			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
+			li = xbmcgui.ListItem('Sortiranje')
+			url = build_url(base, {'content_type': contentType, 'mode': 312, 'showTypeId': showTypeId})
+			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 
 			#download response from rtvslo api
-			js = downloadSourceToString(url_part1+client_id+url_part2+str(page_no)+url_part3)
+			js = downloadSourceToString(url_part1+client_id+url_part2+str(showType)+url_part3+str(sort_by)+url_part4+str(page_no)+url_part5)
 
 			#extract json from response
 			x = js.find('({')
@@ -332,44 +346,44 @@ if __name__ == "__main__":
 				if len(streamList) > 0:
 					page_no = page_no + 1
 					li = xbmcgui.ListItem('> '+str(page_no)+' >')
-					url = build_url(base, {'content_type': contentType, 'mode': mode, 'page': page_no})
+					url = build_url(base, {'content_type': contentType, 'mode': mode, 'page': page_no, 'sort': sort, 'showTypeId': showTypeId})
 					xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 
 		elif mode == 311:
 			li = xbmcgui.ListItem('Informativni')
-			url = build_url(base, {'content_type': contentType, 'mode': 31, 'showTypeId': 34})
+			url = build_url(base, {'content_type': contentType, 'mode': 31, 'showTypeId': 34, 'sort': sort})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Športni')
-			url = build_url(base, {'content_type': contentType, 'mode': 31, 'showTypeId': 35})
+			url = build_url(base, {'content_type': contentType, 'mode': 31, 'showTypeId': 35, 'sort': sort})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Izobraževalni')
-			url = build_url(base, {'content_type': contentType, 'mode': 31, 'showTypeId': 33})
+			url = build_url(base, {'content_type': contentType, 'mode': 31, 'showTypeId': 33, 'sort': sort})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Kulturno Umetniški')
-			url = build_url(base, {'content_type': contentType, 'mode': 31, 'showTypeId': 30})
+			url = build_url(base, {'content_type': contentType, 'mode': 31, 'showTypeId': 30, 'sort': sort})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Razvedrilni')
-			url = build_url(base, {'content_type': contentType, 'mode': 31, 'showTypeId': 36})
+			url = build_url(base, {'content_type': contentType, 'mode': 31, 'showTypeId': 36, 'sort': sort})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Verski')
-			url = build_url(base, {'content_type': contentType, 'mode': 31, 'showTypeId': 32})
+			url = build_url(base, {'content_type': contentType, 'mode': 31, 'showTypeId': 32, 'sort': sort})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Otroški')
-			url = build_url(base, {'content_type': contentType, 'mode': 31, 'showTypeId': 31})
+			url = build_url(base, {'content_type': contentType, 'mode': 31, 'showTypeId': 31, 'sort': sort})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Mladinski')
-			url = build_url(base, {'content_type': contentType, 'mode': 31, 'showTypeId': 15890838})
+			url = build_url(base, {'content_type': contentType, 'mode': 31, 'showTypeId': 15890838, 'sort': sort})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 
 		elif mode == 312:
 			li = xbmcgui.ListItem('Po Datumu')
-			url = build_url(base, {'content_type': contentType, 'mode': 31, 'sort': 'date'})
+			url = build_url(base, {'content_type': contentType, 'mode': 31, 'sort': 'date', 'showTypeId': showTypeId})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Po Naslovu')
-			url = build_url(base, {'content_type': contentType, 'mode': 31, 'sort': 'title'})
+			url = build_url(base, {'content_type': contentType, 'mode': 31, 'sort': 'title', 'showTypeId': showTypeId})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			li = xbmcgui.ListItem('Po Popularnosti')
-			url = build_url(base, {'content_type': contentType, 'mode': 31, 'sort': 'popularity'})
+			url = build_url(base, {'content_type': contentType, 'mode': 31, 'sort': 'popularity', 'showTypeId': showTypeId})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 
 		#step 3: ...profit!
