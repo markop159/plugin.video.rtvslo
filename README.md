@@ -10,7 +10,9 @@ To learn new things
 
 ## Changelog ##
 
-06.06.2016 -> version 2.0.4 (added support for "ava_archive03" media)
+version 2.1.0 (added folders resembling to Android app)
+
+version 2.0.4 (added support for "ava_archive03" media)
 
 ## Credits ##
 
