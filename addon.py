@@ -136,6 +136,8 @@ if __name__ == "__main__":
 		showTypeId = int(showTypeIdArg[0])
 		sortArg = args.get('sort', [''])
 		sort = sortArg[0]
+		searchStringArg = args.get('search_string', [''])
+		search_string = searchStringArg[0]
 
 		#step 1: Collect underpants...
 		if mode == 0:
@@ -145,6 +147,10 @@ if __name__ == "__main__":
 				li = xbmcgui.ListItem('V živo')
 				url = build_url(base, {'content_type': contentType, 'mode': 1})
 				xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
+			#ISKANJE
+			li = xbmcgui.ListItem('Iskanje')
+			url = build_url(base, {'content_type': contentType, 'mode': 41})
+			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			#ARHIV ODDAJ
 			li = xbmcgui.ListItem('Arhiv Oddaj')
 			url = build_url(base, {'content_type': contentType, 'mode': 21})
@@ -385,6 +391,76 @@ if __name__ == "__main__":
 			li = xbmcgui.ListItem('Po Popularnosti')
 			url = build_url(base, {'content_type': contentType, 'mode': 31, 'sort': 'popularity', 'showTypeId': showTypeId})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
+
+		elif mode == 41:
+			url_part1 = 'http://api.rtvslo.si/ava/getSearch?client_id='
+			url_part2 = '&q='
+			url_part3 = '&sort='
+			url_part4 = '&order=desc&pageSize=12&pageNumber='
+			url_part5 = '&source=&hearingAid=0&clip=clip&from=2007-01-01&to=&WPId=&zkp=0&callback=jQuery111307342043845078507_1462458568679&_=1462458568680'
+			client_id = '82013fb3a531d5414f478747c1aca622'
+			page_no = page
+			showType = showTypeId
+			sort_by = sort
+
+			if not search_string:
+				keyboard = xbmc.Keyboard('', 'Iskanje', False)
+				keyboard.doModal()
+				if not keyboard.isConfirmed() or not keyboard.getText():
+					raise Abort()
+				search_string = keyboard.getText()
+				search_string = search_string.replace(' ', '+')
+
+			js = downloadSourceToString(url_part1+client_id+url_part2+search_string+url_part3+str(sort_by)+url_part4+str(page_no)+url_part5)
+
+			#extract json from response
+			x = js.find('({')
+			y = js.rfind('});')
+			if x < 0 or y < 0:
+				xbmcgui.Dialog().ok('RTVSlo.si', 'API response is invalid! :o')
+			else:
+				#parse json to a list of streams
+				js = js[x+1:y+1]
+				streamList = parseShowToStreamList(js)
+
+				#find playlists and list streams
+				for stream in streamList:
+					if (contentTypeInt == 0 and stream.mediaType == 'audio') or (contentTypeInt == 1 and stream.mediaType == 'video'):
+						#url parameters
+						url_part1 = 'http://api.rtvslo.si/ava/getRecording/'
+						url_part2 = '?client_id='
+						url_part3 = '&callback=jQuery1113023734881856870338_1462389077542&_=1462389077543'
+						client_id = '82013fb3a531d5414f478747c1aca622'
+						recording = stream.streamId
+
+						#download response from rtvslo api
+						js = downloadSourceToString(url_part1+recording+url_part2+client_id+url_part3)
+
+						#extract json from response
+						x = js.find('({')
+						y = js.rfind('});')
+						if x < 0 or y < 0:
+							xbmcgui.Dialog().ok('RTVSlo.si', 'API response is invalid! :o')
+						else:
+							#parse json to get a playlist
+							js = js[x+1:y+1]
+							playlist = parseStreamToPlaylist(js, contentTypeInt)
+
+							#list stream
+							li = xbmcgui.ListItem(stream.date+' - '+stream.title, iconImage=stream.thumbnail)
+							if contentTypeInt == 0:
+								li.setInfo('music', {'duration': stream.duration})
+							elif contentTypeInt == 1:
+								li.setInfo('video', {'duration': stream.duration})
+							if playlist:
+								xbmcplugin.addDirectoryItem(handle=handle, url=playlist, listitem=li)
+
+				#show next page marker if needed
+				if len(streamList) > 0:
+					page_no = page_no + 1
+					li = xbmcgui.ListItem('> '+str(page_no)+' >')
+					url = build_url(base, {'content_type': contentType, 'mode': mode, 'page': page_no, 'sort': sort, 'showTypeId': showTypeId, 'search_string': search_string})
+					xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 
 		#step 3: ...profit!
 		else:
