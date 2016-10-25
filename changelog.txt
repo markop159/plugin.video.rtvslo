@@ -1,3 +1,5 @@
+v2.2.0
+ - added search option
 v2.1.0
  - added genres and sorting similar to android version of RTV4D app
  - added 'val 202 sport' radio station

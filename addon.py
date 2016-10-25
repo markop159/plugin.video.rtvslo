@@ -148,9 +148,10 @@ if __name__ == "__main__":
 				url = build_url(base, {'content_type': contentType, 'mode': 1})
 				xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			#ISKANJE
-			li = xbmcgui.ListItem('Iskanje')
-			url = build_url(base, {'content_type': contentType, 'mode': 41})
-			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
+			if contentType == 'video':
+				li = xbmcgui.ListItem('Iskanje')
+				url = build_url(base, {'content_type': contentType, 'mode': 41})
+				xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			#ARHIV ODDAJ
 			li = xbmcgui.ListItem('Arhiv Oddaj')
 			url = build_url(base, {'content_type': contentType, 'mode': 21})
