@@ -1,3 +1,6 @@
+v2.3.0
+ - added search history
+ - added TV shows archive by alphabet
 v2.2.0
  - added search option
 v2.1.0

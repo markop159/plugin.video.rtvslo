@@ -6,6 +6,8 @@ import urlparse
 import json
 import xbmcgui
 import xbmcplugin
+import xbmcaddon
+import os
 #######################################
 
 #classes
@@ -55,6 +57,21 @@ def parseShowToStreamList(js):
 	for stream in j:
 		streamList.append(Stream(stream['id'], stream['mediaType'], stream['title'], stream['date'], stream['duration'], stream['link'], stream['images']['thumb']))
 	return streamList
+
+def delete_history_item(item):
+	h_file = os.path.join(xbmcaddon.Addon('plugin.video.rtvslo').getAddonInfo('path'), 'history')
+	if item!='brisi_vse':
+		hfile = open(h_file, 'r')
+		data = hfile.readlines()
+		hfile.close()
+		hfile = open(h_file, 'w')
+		for line in data:
+			if line!=item+'\n':
+				if line!=item:
+					hfile.write(line)
+		hfile.close()
+	else:
+		open(h_file, 'w').close()
 
 def parseStreamToPlaylist(js, folderType):
 	j = json.loads(js)
@@ -139,6 +156,9 @@ if __name__ == "__main__":
 		searchStringArg = args.get('search_string', [''])
 		search_string = searchStringArg[0]
 
+		#open history file for reading and writing
+		search_history_file = os.path.join(xbmcaddon.Addon('plugin.video.rtvslo').getAddonInfo('path'), 'history')
+
 		#step 1: Collect underpants...
 		if mode == 0:
 			#mode == 0: list main menu (LIVE RADIO, ODDAJE, ARHIV)
@@ -149,8 +169,12 @@ if __name__ == "__main__":
 				xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			#ISKANJE
 			if contentType == 'video':
-				li = xbmcgui.ListItem('Iskanje')
+				li = xbmcgui.ListItem('Iskanje Prispevkov')
 				url = build_url(base, {'content_type': contentType, 'mode': 41})
+				xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
+				#Zgodovina Iskanja
+				li = xbmcgui.ListItem('Zgodovina Iskanja')
+				url = build_url(base, {'content_type': contentType, 'mode': 42})
 				xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			#ARHIV ODDAJ
 			li = xbmcgui.ListItem('Arhiv Oddaj')
@@ -159,6 +183,10 @@ if __name__ == "__main__":
 			#ARHIV PRISPEVKOV
 			li = xbmcgui.ListItem('Arhiv Prispevkov')
 			url = build_url(base, {'content_type': contentType, 'mode': 31})
+			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
+			#ARHIV PO ABECEDI
+			li = xbmcgui.ListItem('Arhiv Po Abecedi')
+			url = build_url(base, {'content_type': contentType, 'mode': 51})
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 
 		#step 2: ...?...
@@ -408,8 +436,26 @@ if __name__ == "__main__":
 				keyboard = xbmc.Keyboard('', 'Iskanje', False)
 				keyboard.doModal()
 				if not keyboard.isConfirmed() or not keyboard.getText():
-					raise Abort()
+					xbmcgui.Dialog().ok('RTVSLO', 'Iskanje prekinjeno')
 				search_string = keyboard.getText()
+				sFile = open(search_history_file, 'r')
+				data = sFile.readlines()
+				sFile.close()
+				sFile = open(search_history_file, 'w')
+				for line in data:
+					if line!='\n':
+						sFile.write('%s' %line)
+				sFile.write('\n%s\n' %search_string)
+				sFile.close()
+				#remove empty lines and duplicates
+				sFile = open(search_history_file, 'r')
+				data = set(sFile.readlines())
+				sFile.close()
+				sFile = open(search_history_file, 'w')
+				for line in data:
+					if line!='\n':
+						sFile.write('%s' %line)
+				sFile.close()
 				search_string = search_string.replace(' ', '+')
 
 			js = downloadSourceToString(url_part1+client_id+url_part2+search_string+url_part3+str(sort_by)+url_part4+str(page_no)+url_part5)
@@ -461,6 +507,131 @@ if __name__ == "__main__":
 					page_no = page_no + 1
 					li = xbmcgui.ListItem('> '+str(page_no)+' >')
 					url = build_url(base, {'content_type': contentType, 'mode': mode, 'page': page_no, 'sort': sort, 'showTypeId': showTypeId, 'search_string': search_string})
+					xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
+
+		elif mode == 42:
+			sFile = open(search_history_file, 'r')
+			if os.path.getsize(search_history_file) == 0:
+				li = xbmcgui.ListItem('Zgodovina je prazna, pojdi na iskanje')
+				url = build_url(base, {'content_type': contentType, 'mode': 41, 'sort': 'date', 'showTypeId': showTypeId})
+				xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
+			else:
+				li = xbmcgui.ListItem('Novo Iskanje')
+				li.addContextMenuItems([('Izbriši zgodovino', 'RunPlugin(%s)' % (build_url(base, {'content_type': contentType, 'mode':43, 'search_string': 'brisi_vse'})))])
+				url = build_url(base, {'content_type': contentType, 'mode': 41, 'sort': 'date', 'showTypeId': showTypeId})
+				xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
+			for line in sFile:
+				search_string = line.replace(' ', '+').replace('\n','')
+				li = xbmcgui.ListItem(line)
+				li.addContextMenuItems([('Izbriši iskanje', 'RunPlugin(%s)' % (build_url(base, {'content_type': contentType, 'mode':43, 'search_string': search_string}))), ('Izbriši zgodovino', 'RunPlugin(%s)' % (build_url(base, {'content_type': contentType, 'mode':43, 'search_string': 'brisi_vse'})))])
+				url = build_url(base, {'content_type': contentType, 'mode': 41, 'sort': 'date', 'showTypeId': showTypeId, 'search_string': search_string})
+				xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
+			sFile.close()
+
+		elif mode == 43:
+			delete_history_item(search_string)
+			xbmc.executebuiltin('Container.Refresh')
+
+		elif mode == 51:
+			#mode == 51: list letters menu (ODDAJE)
+			oddaje = ['A','B','C','Č','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','Š','T','U','V','W','Z','Ž','0']
+			for o in oddaje:
+				li = xbmcgui.ListItem(o)
+				url = build_url(base, {'content_type': contentType, 'mode': 52, 'letter': o})
+				xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
+
+		elif mode == 52:
+			#mode == 53: letter selected, list shows (ODDAJE)
+
+			#url parameters
+			url_part1 = 'http://api.rtvslo.si/ava/getShowsSearch?client_id='
+			url_part2 = '&sort=title&order=asc&pageNumber=0&pageSize=100&hidden=0&start='
+			url_part3 = '&callback=jQuery111306175395867148092_1462381908718&_=1462381908719'
+			client_id = '82013fb3a531d5414f478747c1aca622'
+			start = letter
+
+			#download response from rtvslo api
+			js = downloadSourceToString(url_part1+client_id+url_part2+start+url_part3)
+
+			#extract json from response
+			x = js.find('({')
+			y = js.rfind('});')
+			if x < 0 or y < 0:
+				xbmcgui.Dialog().ok('RTVSlo.si', 'API response is invalid! :o')
+			else:
+				#parse json to a list of shows
+				js = js[x+1:y+1]
+				showList = parseShowsToShowList(js)
+
+				#list shows
+				for show in showList:
+					if (contentType == 'audio' and show.mediaType == 'radio') or (contentType == 'video' and show.mediaType == 'tv'):
+						li = xbmcgui.ListItem(show.title, iconImage=show.thumbnail)
+						url = build_url(base, {'content_type': contentType, 'mode': 53, 'page': 0, 'id': show.showId})
+						xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
+
+		elif mode == 53:
+			#mode == 53: show selected, list streams (ODDAJE)
+
+			#url parameters
+			url_part1 = 'http://api.rtvslo.si/ava/getSearch?client_id='
+			url_part2 = '&pageNumber='
+			url_part3 = '&pageSize=12&clip=show&sort=date&order=desc&from=1991-01-01&showId='
+			url_part4 = '&callback=jQuery11130007442688502199202_1462387460339&_=1462387460342'
+			client_id = '82013fb3a531d5414f478747c1aca622'
+			page_no = page
+			show_id = id_
+
+			#download response from rtvslo api
+			js = downloadSourceToString(url_part1+client_id+url_part2+str(page_no)+url_part3+show_id+url_part4)
+
+			#extract json from response
+			x = js.find('({')
+			y = js.rfind('});')
+			if x < 0 or y < 0:
+				xbmcgui.Dialog().ok('RTVSlo.si', 'API response is invalid! :o')
+			else:
+				#parse json to a list of streams
+				js = js[x+1:y+1]
+				streamList = parseShowToStreamList(js)
+
+				#find playlists and list streams
+				for stream in streamList:
+
+					#url parameters
+					url_part1 = 'http://api.rtvslo.si/ava/getRecording/'
+					url_part2 = '?client_id='
+					url_part3 = '&callback=jQuery1113023734881856870338_1462389077542&_=1462389077543'
+					client_id = '82013fb3a531d5414f478747c1aca622'
+					recording = stream.streamId
+
+					#download response from rtvslo api
+					js = downloadSourceToString(url_part1+recording+url_part2+client_id+url_part3)
+
+					#extract json from response
+					x = js.find('({')
+					y = js.rfind('});')
+					if x < 0 or y < 0:
+						xbmcgui.Dialog().ok('RTVSlo.si', 'API response is invalid! :o')
+					else:
+						#parse json to get a playlist
+						js = js[x+1:y+1]
+						playlist = parseStreamToPlaylist(js, contentTypeInt)
+
+						#list stream
+						li = xbmcgui.ListItem(stream.date+' - '+stream.title, iconImage=stream.thumbnail)
+						if contentTypeInt == 0:
+							li.setInfo('music', {'duration': stream.duration})
+						elif contentTypeInt == 1:
+							li.setInfo('video', {'duration': stream.duration})
+						if playlist:
+							xbmcplugin.addDirectoryItem(handle=handle, url=playlist, listitem=li)
+
+				#show next page marker if needed
+				if len(streamList) > 0:
+					page_no = page_no + 1
+					li = xbmcgui.ListItem('> '+str(page_no)+' >')
+					url = build_url(base, {'content_type': contentType, 'mode': mode, 'page': page_no, 'id': show_id})
 					xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 
 		#step 3: ...profit!
