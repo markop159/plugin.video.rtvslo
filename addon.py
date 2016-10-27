@@ -169,7 +169,7 @@ if __name__ == "__main__":
 				xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 			#ISKANJE
 			if contentType == 'video':
-				li = xbmcgui.ListItem('Iskanje Prispevkov')
+				li = xbmcgui.ListItem('Iskanje')
 				url = build_url(base, {'content_type': contentType, 'mode': 41})
 				xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 				#Zgodovina Iskanja
@@ -427,6 +427,7 @@ if __name__ == "__main__":
 			url_part3 = '&sort='
 			url_part4 = '&order=desc&pageSize=12&pageNumber='
 			url_part5 = '&source=&hearingAid=0&clip=clip&from=2007-01-01&to=&WPId=&zkp=0&callback=jQuery111307342043845078507_1462458568679&_=1462458568680'
+			url_part5_2 = '&source=&hearingAid=0&clip=show&from=2007-01-01&to=&WPId=&zkp=0&callback=jQuery111307342043845078507_1462458568679&_=1462458568680'
 			client_id = '82013fb3a531d5414f478747c1aca622'
 			page_no = page
 			showType = showTypeId
@@ -458,7 +459,12 @@ if __name__ == "__main__":
 				sFile.close()
 				search_string = search_string.replace(' ', '+')
 
-			js = downloadSourceToString(url_part1+client_id+url_part2+search_string+url_part3+str(sort_by)+url_part4+str(page_no)+url_part5)
+			chose_dial = xbmcgui.Dialog().select('Izberi:', ['Iskanje Prispevkov', 'Iskanje Oddaj'])
+			if chose_dial == 0:
+				js = downloadSourceToString(url_part1+client_id+url_part2+search_string+url_part3+str(sort_by)+url_part4+str(page_no)+url_part5)
+			else:
+				js = downloadSourceToString(url_part1+client_id+url_part2+search_string+url_part3+str(sort_by)+url_part4+str(page_no)+url_part5_2)
+
 
 			#extract json from response
 			x = js.find('({')

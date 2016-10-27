@@ -1,3 +1,5 @@
+v2.3.1
+ - added chose dialog for shows and clips
 v2.3.0
  - added search history
  - added TV shows archive by alphabet
