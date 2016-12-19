@@ -126,6 +126,10 @@ if __name__ == "__main__":
 		#get add-on handle
 		handle = int(sys.argv[1])
 
+		#in some cases if video is selected kodi returns empty sys.argv[2], this is a dirty fix
+		if sys.argv[2] == '':
+			sys.argv[2] = '?content_type=video'
+
 		#get add-on args
 		args = urlparse.parse_qs(sys.argv[2][1:])
 

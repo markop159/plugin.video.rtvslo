@@ -1,3 +1,5 @@
+v2.3.2
+ - in some cases if video is selected kodi returns empty sys.argv[2] (fixed)
 v2.3.1
  - added chose dialog for shows and clips
 v2.3.0
