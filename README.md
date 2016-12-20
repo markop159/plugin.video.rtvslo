@@ -8,11 +8,7 @@ Audio / video plugin (add-on) for Kodi. It plays audio and video podcasts from a
 
 To learn new things
 
-## Changelog ##
-
-version 2.1.0 (added folders resembling to Android app)
-
-version 2.0.4 (added support for "ava_archive03" media)
+## [Changelog](https://github.com/markop159/plugin.video.rtvslo/blob/master/changelog.txt) ##
 
 ## Credits ##
 
