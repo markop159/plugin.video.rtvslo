@@ -98,14 +98,14 @@ def parseStreamToPlaylist(js, folderType):
 		#audio streams and some older video streams have this format
 		try:
 			playlist_type2_part1 = j['mediaFiles'][0]['streamers']['http']
-			if playlist_type2_part1.find('ava_archive03') > 0:
-				playlist_type2_part1 = playlist_type2_part1.replace("ava_archive03", "ava_archive03/")
-			elif playlist_type2_part1.find('ava_archive02') > 0:
-				playlist_type2_part1 = playlist_type2_part1.replace("ava_archive02", "podcast\/ava_archive02\/")
-			elif playlist_type2_part1.find('ava_archive01') > 0:
-				playlist_type2_part1 = playlist_type2_part1.replace("ava_archive01", "ava_archive01\/")
-			elif playlist_type2_part1.find('ava_archive00') > 0:
-				playlist_type2_part1 = playlist_type2_part1.replace("ava_archive00", "ava_archive00\/")
+			if playlist_type2_part1.find('rtv4d_archive03') > 0:
+				playlist_type2_part1 = playlist_type2_part1.replace("rtv4d_archive03", "rtv4d_archive03/")
+			elif playlist_type2_part1.find('rtv4d_archive02') > 0:
+				playlist_type2_part1 = playlist_type2_part1.replace("rtv4d_archive02", "podcast\/rtv4d_archive02\/")
+			elif playlist_type2_part1.find('rtv4d_archive01') > 0:
+				playlist_type2_part1 = playlist_type2_part1.replace("rtv4d_archive01", "rtv4d_archive01\/")
+			elif playlist_type2_part1.find('rtv4d_archive00') > 0:
+				playlist_type2_part1 = playlist_type2_part1.replace("rtv4d_archive00", "rtv4d_archive00\/")
 			playlist_type2_part2 = j['mediaFiles'][0]['filename']
 			return playlist_type2_part1+playlist_type2_part2
 		except Exception as e:
@@ -198,7 +198,7 @@ if __name__ == "__main__":
 			#mode == 1: list radio stations (LIVE RADIO)
 			radioList = [['ra1', 'RA1', 'Radio prvi'], ['val202', 'VAL202', 'Val 202'], ['sportval202', 'SPORTVAL202', 'Val 202 Šport'], ['ars', 'ARS', 'ARS'], ['rakp', 'RAKP', 'Radio Koper'], ['rsi', 'RSI', 'Radio Si'], ['rmb', 'RAMB', 'Radio Maribor'], ['capo', 'CAPO', 'Radio Capodistria'], ['mmr', 'MMR', 'RA MMR']]
 			liveLink = 'http://mp3.rtvslo.si/'
-			liveThumb = 'http://img.rtvslo.si/_up/ava/archive2/Content/channel_logos/'
+			liveThumb = 'http://img.rtvslo.si/_up/rtv4d/archive2/Content/channel_logos/'
 			for radio in radioList:
 				li = xbmcgui.ListItem(radio[2], iconImage=liveThumb+radio[1]+'_thumb.jpg')
 				xbmcplugin.addDirectoryItem(handle=handle, url=liveLink+radio[0], listitem=li)
@@ -207,7 +207,7 @@ if __name__ == "__main__":
 			#mode == 21: (ARHIV ODDAJ)
 
 			#url parameters
-			url_part1 = 'http://api.rtvslo.si/ava/getSearch?client_id='
+			url_part1 = 'http://4d.rtvslo.si/rtv4d/getSearch?client_id='
 			url_part2 = '&q=&showTypeId='
 			url_part3 = '&sort='
 			url_part4 = '&order=desc&pageSize=12&pageNumber='
@@ -242,7 +242,7 @@ if __name__ == "__main__":
 				for stream in streamList:
 					if (contentTypeInt == 0 and stream.mediaType == 'audio') or (contentTypeInt == 1 and stream.mediaType == 'video'):
 						#url parameters
-						url_part1 = 'http://api.rtvslo.si/ava/getRecording/'
+						url_part1 = 'http://api.rtvslo.si/rtv4d/getRecording/'
 						url_part2 = '?client_id='
 						url_part3 = '&callback=jQuery1113023734881856870338_1462389077542&_=1462389077543'
 						client_id = '82013fb3a531d5414f478747c1aca622'
@@ -318,7 +318,7 @@ if __name__ == "__main__":
 			#mode == 31: (ARHIV PRISPEVKOV)
 
 			#url parameters
-			url_part1 = 'http://api.rtvslo.si/ava/getSearch?client_id='
+			url_part1 = 'http://4d.rtvslo.si/rtv4d/getSearch?client_id='
 			url_part2 = '&q=&showTypeId='
 			url_part3 = '&sort='
 			url_part4 = '&order=desc&pageSize=12&pageNumber='
@@ -353,7 +353,7 @@ if __name__ == "__main__":
 				for stream in streamList:
 					if (contentTypeInt == 0 and stream.mediaType == 'audio') or (contentTypeInt == 1 and stream.mediaType == 'video'):
 						#url parameters
-						url_part1 = 'http://api.rtvslo.si/ava/getRecording/'
+						url_part1 = 'http://api.rtvslo.si/4d/getRecording/'
 						url_part2 = '?client_id='
 						url_part3 = '&callback=jQuery1113023734881856870338_1462389077542&_=1462389077543'
 						client_id = '82013fb3a531d5414f478747c1aca622'
@@ -426,7 +426,7 @@ if __name__ == "__main__":
 			xbmcplugin.addDirectoryItem(handle=handle, url=url, listitem=li, isFolder=True)
 
 		elif mode == 41:
-			url_part1 = 'http://api.rtvslo.si/ava/getSearch?client_id='
+			url_part1 = 'http://api.rtvslo.si/4d/getSearch?client_id='
 			url_part2 = '&q='
 			url_part3 = '&sort='
 			url_part4 = '&order=desc&pageSize=12&pageNumber='
@@ -484,7 +484,7 @@ if __name__ == "__main__":
 				for stream in streamList:
 					if (contentTypeInt == 0 and stream.mediaType == 'audio') or (contentTypeInt == 1 and stream.mediaType == 'video'):
 						#url parameters
-						url_part1 = 'http://api.rtvslo.si/ava/getRecording/'
+						url_part1 = 'http://api.rtvslo.si/4d/getRecording/'
 						url_part2 = '?client_id='
 						url_part3 = '&callback=jQuery1113023734881856870338_1462389077542&_=1462389077543'
 						client_id = '82013fb3a531d5414f478747c1aca622'
@@ -554,7 +554,7 @@ if __name__ == "__main__":
 			#mode == 53: letter selected, list shows (ODDAJE)
 
 			#url parameters
-			url_part1 = 'http://api.rtvslo.si/ava/getShowsSearch?client_id='
+			url_part1 = 'http://api.rtvslo.si/4d/getShowsSearch?client_id='
 			url_part2 = '&sort=title&order=asc&pageNumber=0&pageSize=100&hidden=0&start='
 			url_part3 = '&callback=jQuery111306175395867148092_1462381908718&_=1462381908719'
 			client_id = '82013fb3a531d5414f478747c1aca622'
@@ -584,7 +584,7 @@ if __name__ == "__main__":
 			#mode == 53: show selected, list streams (ODDAJE)
 
 			#url parameters
-			url_part1 = 'http://api.rtvslo.si/ava/getSearch?client_id='
+			url_part1 = 'http://api.rtvslo.si/4d/getSearch?client_id='
 			url_part2 = '&pageNumber='
 			url_part3 = '&pageSize=12&clip=show&sort=date&order=desc&from=1991-01-01&showId='
 			url_part4 = '&callback=jQuery11130007442688502199202_1462387460339&_=1462387460342'
@@ -609,7 +609,7 @@ if __name__ == "__main__":
 				for stream in streamList:
 
 					#url parameters
-					url_part1 = 'http://api.rtvslo.si/ava/getRecording/'
+					url_part1 = 'http://api.rtvslo.si/4d/getRecording/'
 					url_part2 = '?client_id='
 					url_part3 = '&callback=jQuery1113023734881856870338_1462389077542&_=1462389077543'
 					client_id = '82013fb3a531d5414f478747c1aca622'
